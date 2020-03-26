@@ -1,6 +1,7 @@
 'use strict'
 
 const Project = use('App/Models/Project')
+const AuthService = use('App/Services/AuthService')
 
 class ProjectController {
     /**
@@ -11,6 +12,7 @@ class ProjectController {
      */
     async index({ auth }) {
         const user = await auth.getUser()
+
         return await user.projects().fetch()
     }
 
@@ -28,28 +30,60 @@ class ProjectController {
             name
         })
         await user.projects().save(project)
+
         return project
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param {*} { auth, request, params }
+     * @param {*} { auth, response, params }
      * @memberof ProjectController
      */
     async destroy({ auth, response, params }) {
         const user = await auth.getUser()
         const { id } = params
         const project = await Project.find(id)
-        if (project.user_id !== user.id) {
-            return response.status(403).json({
-                message: "You not authorized for do this action"
-            })
-        }
+        AuthService.Permission(project, user)
         await project.delete()
+
         return {
-            message: "The project with ID " + id + " has been deleted"
+            success: "The project with ID " + id + " has been deleted"
         }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param {*} { auth, params, request }
+     * @returns
+     * @memberof ProjectController
+     */
+    async update({ auth, params, request }) {
+        const user = await auth.getUser()
+        const { id } = params
+        const project = await Project.find(id)
+        AuthService.Permission(project, user)
+        project.merge(request.only('name'))
+        await project.save()
+
+        return project
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param {*} { auth, params }
+     * @returns
+     * @memberof ProjectController
+     */
+    async show({ auth, params }) {
+        const user = await auth.getUser()
+        const { id } = params
+        const project = await Project.find(id)
+        AuthService.Permission(project, user)
+
+        return project
     }
 
 }
