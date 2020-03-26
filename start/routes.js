@@ -26,6 +26,7 @@ Route.group(() => {
 }).prefix('api/v1/users')
 
 Route.group(() => {
-  Route.get('/', 'ProjectController.index').middleware('auth')
-  Route.post('/', 'ProjectController.create').middleware('auth')
-}).prefix('api/v1/projects')
+  Route.get('/', 'ProjectController.index')
+  Route.post('/', 'ProjectController.create')
+  Route.delete('/:id', 'ProjectController.destroy')
+}).prefix('api/v1/projects').middleware('auth')

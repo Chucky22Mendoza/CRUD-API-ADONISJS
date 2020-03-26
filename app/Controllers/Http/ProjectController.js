@@ -7,7 +7,6 @@ class ProjectController {
      * Display a listing of the resource.
      *
      * @param {*} request
-     * @param {*} response
      * @memberof ProjectController
      */
     async index({ auth }) {
@@ -30,6 +29,27 @@ class ProjectController {
         })
         await user.projects().save(project)
         return project
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param {*} { auth, request, params }
+     * @memberof ProjectController
+     */
+    async destroy({ auth, response, params }) {
+        const user = await auth.getUser()
+        const { id } = params
+        const project = await Project.find(id)
+        if (project.user_id !== user.id) {
+            return response.status(403).json({
+                message: "You not authorized for do this action"
+            })
+        }
+        await project.delete()
+        return {
+            message: "The project with ID " + id + " has been deleted"
+        }
     }
 
 }
