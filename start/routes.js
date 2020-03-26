@@ -17,5 +17,15 @@
 const Route = use('Route')
 
 Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
+  return { message: 'Welcome to AdonisJS API' }
 })
+
+Route.group(() => {
+  Route.post('/register', 'UserController.store')
+  Route.post('/login', 'UserController.login')
+}).prefix('api/v1/users')
+
+Route.group(() => {
+  Route.get('/', 'ProjectController.index').middleware('auth')
+  Route.post('/', 'ProjectController.create').middleware('auth')
+}).prefix('api/v1/projects')
