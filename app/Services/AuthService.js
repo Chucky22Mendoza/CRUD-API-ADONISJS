@@ -4,7 +4,7 @@ const ResourceNotFoundException = use('App/Exceptions/ResourceNotFoundException'
 class AuthService {
     Permission(resource, user) {
         if (!resource) {
-            throw new ResourceNotFoundException
+            throw new ResourceNotFoundException()
         }
         if (resource.user_id !== user.id) {
             throw new InvalidAccessException()

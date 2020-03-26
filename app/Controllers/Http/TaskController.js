@@ -3,16 +3,17 @@
 const Project = use('App/Models/Project')
 const Task = use('App/Models/Task')
 const AuthService = use('App/Services/AuthService')
+const TaskService = use('App/Services/TaskService')
 
 class TaskController {
 
     /**
      * Display a listing of the resource.
      *
-     * @param {*} { auth, request, params }
+     * @param {*} { auth, params }
      * @memberof TaskController
      */
-    async index({ auth, request, params }) {
+    async index({ auth, params }) {
         const user = await auth.getUser()
         const { id } = params
         const project = await Project.find(id)
@@ -32,6 +33,7 @@ class TaskController {
         const user = await auth.getUser()
         const { id } = params
         const task = await Task.find(id)
+        TaskService.CheckResource(task)
         const project = await task.project().fetch()
         AuthService.Permission(project, user)
 
@@ -71,6 +73,7 @@ class TaskController {
         const user = await auth.getUser()
         const { id } = params
         const task = await Task.find(id)
+        TaskService.CheckResource(task)
         const project = await task.project().fetch()
         AuthService.Permission(project, user)
         await task.delete()
@@ -91,6 +94,7 @@ class TaskController {
         const user = await auth.getUser()
         const { id } = params
         const task = await Task.find(id)
+        TaskService.CheckResource(task)
         const project = await task.project().fetch()
         AuthService.Permission(project, user)
         task.merge(request.only([
