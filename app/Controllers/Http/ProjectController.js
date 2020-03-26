@@ -17,6 +17,22 @@ class ProjectController {
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param {*} { auth, params }
+     * @returns
+     * @memberof ProjectController
+     */
+    async show({ auth, params }) {
+        const user = await auth.getUser()
+        const { id } = params
+        const project = await Project.find(id)
+        AuthService.Permission(project, user)
+
+        return project
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @param {*} { auth, request }
@@ -37,10 +53,10 @@ class ProjectController {
     /**
      * Remove the specified resource from storage.
      *
-     * @param {*} { auth, response, params }
+     * @param {*} { auth, params }
      * @memberof ProjectController
      */
-    async destroy({ auth, response, params }) {
+    async destroy({ auth, params }) {
         const user = await auth.getUser()
         const { id } = params
         const project = await Project.find(id)
@@ -48,7 +64,7 @@ class ProjectController {
         await project.delete()
 
         return {
-            success: "The project with ID " + id + " has been deleted"
+            success: "The Project with ID: " + id + " has been deleted"
         }
     }
 
@@ -66,22 +82,6 @@ class ProjectController {
         AuthService.Permission(project, user)
         project.merge(request.only('name'))
         await project.save()
-
-        return project
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param {*} { auth, params }
-     * @returns
-     * @memberof ProjectController
-     */
-    async show({ auth, params }) {
-        const user = await auth.getUser()
-        const { id } = params
-        const project = await Project.find(id)
-        AuthService.Permission(project, user)
 
         return project
     }
